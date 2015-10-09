@@ -19,7 +19,7 @@ var io = require('socket.io')(server);
 // serve static files from the public folder
 app.use(express.static('public'));
 
-app.get('/', function (req, res) {
+app.get('/datafeed', function (req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
