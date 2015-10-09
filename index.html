@@ -1,0 +1,111 @@
+<html>
+
+	<head>
+		<title>Live Feed</title>
+		<script type="text/javascript" src="/socket.io-1.3.7.js"></script>
+		<script type="text/javascript" src="/jquery-1.10.1.min.js"></script>
+		<script type="text/javascript" src="/highcharts.js"></script>
+		<script type="text/javascript" src="/exporting.js"></script>
+		<script type="text/javascript">
+			$(function () {
+			    $(document).ready(function() {
+				  Highcharts.setOptions({
+					global: {
+					    useUTC: false
+					}
+				  });
+ 
+				  var chart;
+				  $('#container').highcharts({
+					chart: {
+					    type: 'spline',
+					    animation: Highcharts.svg, // don't animate in old IE
+					    marginRight: 255,
+					    events: {
+						  load: function(){
+						  	var chart = this;
+						  	var socket = io('http://192.168.0.16:3000');
+						      socket.on('dataPlot', function(dataPlot){
+						          var shift = chart.series[0].data.length > 20;
+							    chart.series[0].addPoint([, parseInt(dataPlot[1])], true, shift);
+							    chart.series[1].addPoint([, parseInt(dataPlot[2])], true, shift);
+							    chart.series[2].addPoint([, parseInt(dataPlot[3])], true, shift);
+						      });
+						  }
+					    }
+					},
+					title: {
+					    text: 'Live Accelerometer Data'
+					},
+					xAxis: {
+					    title: {
+					        text: 'Time'
+					    }
+					},
+					yAxis: [{
+					    title: {
+						  text: 'X Axis'
+					    },
+					    plotLines: [{
+						  value: 0,
+						  width: 1,
+						  color: '#808080'
+					    }]
+					},
+					{
+					    title: {
+						  text: 'Y Axis'
+					    },
+					    plotLines: [{
+						  value: 0,
+						  width: 1,
+						  color: '#808080'
+					    }]
+					},
+					{
+					    title: {
+						  text: 'Z Axis'
+					    },
+					    plotLines: [{
+						  value: 0,
+						  width: 1,
+						  color: '#808080'
+					    }]
+					}],
+					tooltip: {
+					    formatter: function() {
+							return '<b>'+ this.series.name +'</b><br/>'+
+							//Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
+							Highcharts.numberFormat(this.y, 2) + '<br/>'+
+							Highcharts.numberFormat(this.x);
+					    }
+					},
+					legend: {
+					    enabled: true
+					},
+					exporting: {
+					    enabled: false
+					},
+					series: [{
+					    name: 'X Data',
+					    data: []
+					},
+					{
+					    name: 'Y Data',
+					    data: []
+					},
+					{
+					    name: 'Z Data',
+					    data: []
+					}]
+				  });
+			    });
+			});
+		</script>
+	</head>
+
+	<body>
+		<div id="container" style="min-width: 728px; height: 400px; margin: 0 auto"></div>
+	</body>
+
+</html>
